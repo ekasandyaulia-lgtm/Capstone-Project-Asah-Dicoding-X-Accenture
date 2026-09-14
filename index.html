@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MineOptimize - Integrated System</title>
+
+    <!-- Library Eksternal -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body
+    class="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 h-full overflow-hidden transition-colors duration-300">
+
+    <!-- 1. LOGIN SCREEN -->
+    <div id="login-screen"
+        class="fixed inset-0 z-50 bg-gray-50 dark:bg-gray-900 flex flex-col justify-center items-center px-6 transition-opacity duration-500">
+        <div class="w-full max-w-sm">
+            <div class="flex justify-center mb-6">
+                <div
+                    class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-3xl shadow-lg shadow-blue-900/50">
+                    M</div>
+            </div>
+            <h2 class="text-center text-2xl font-bold text-gray-900 dark:text-white mb-2">MineOptimize</h2>
+            <p class="text-center text-gray-500 dark:text-gray-400 mb-8 text-sm">Value Chain Management System</p>
+
+            <form onsubmit="handleLogin(event)" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Username</label>
+                    <input type="text" id="login-user"
+                        class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+                        placeholder="admin / mining / shipping / viewer" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+                    <input type="password" id="login-pass"
+                        class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-3 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-colors"
+                        placeholder="******" required>
+                </div>
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all transform active:scale-95">
+                    Masuk Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. APLIKASI UTAMA -->
+    <div id="main-app" class="hidden h-full flex">
+
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="fixed md:static z-40
+         w-64 h-full
+         bg-white dark:bg-gray-800
+         border-r border-gray-200 dark:border-gray-700
+         flex flex-col
+         transform -translate-x-full md:translate-x-0
+         transition-transform duration-300 ease-in-out">
+            <div
+                class="h-16 flex items-center px-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center font-bold text-white">M
+                    </div>
+                    <span class="font-bold text-lg text-gray-900 dark:text-white">MineOptimize</span>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-4 py-6 space-y-1">
+                <p class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Menu Utama</p>
+
+                <a href="#" id="nav-dashboard" onclick="switchPage('dashboard')"
+                    class="nav-item group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white mb-1 transition-colors">
+                    <span class="w-6 text-center mr-2">📊</span> Dashboard
+                </a>
+
+                <a href="#" id="nav-mining" onclick="switchPage('mining')"
+                    class="nav-item role-restricted role-mineplanner role-admin hover:bg-gray-100 dark:hover:bg-gray-700/50 text-gray-600 dark:text-gray-300 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors">
+                    <span class="w-6 text-center mr-2">⛏️</span> Mining Plan
+                </a>
+
+                <a href="#" id="nav-shipping" onclick="switchPage('shipping')"
+                    class="nav-item role-restricted role-shippingplanner role-admin hover:bg-gray-100 dark:hover:bg-gray-700/50 text-gray-600 dark:text-gray-300 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors">
+                    <span class="w-6 text-center mr-2">🚢</span> Shipping Plan
+                </a>
+
+                <p
+                    class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-6 mb-2 role-restricted role-admin">
+                    Administrator</p>
+
+                <a href="#" id="nav-users" onclick="switchPage('users')"
+                    class="nav-item role-restricted role-admin hover:bg-gray-100 dark:hover:bg-gray-700/50 text-gray-600 dark:text-gray-300 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors">
+                    <span class="w-6 text-center mr-2">👥</span> User Management
+                </a>
+            </nav>
+
+            <!-- User Profile Bottom -->
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50/30 dark:bg-gray-900/30">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="h-9 w-9 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-sm font-bold text-gray-700 dark:text-white">
+                        U
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p id="profile-name" class="text-sm font-medium text-gray-900 dark:text-white truncate">User</p>
+                        <p id="profile-role" class="text-xs text-gray-500 dark:text-gray-400 truncate">Role</p>
+                    </div>
+                    <button onclick="logout()" class="text-gray-400 hover:text-red-400" title="Logout">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </aside>
+        <div id="overlay" class="fixed inset-0 bg-black/40 z-30 hidden md:hidden" onclick="toggleSidebar()"></div>
+
+        <!-- MAIN CONTENT -->
+        <div class="flex-1 flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900 transition-colors">
+            <header
+                class="h-16 flex items-center justify-between px-6 border-b border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur transition-colors">
+
+                <!-- HEADER: Tombol Back, Sidebar, dan Judul Halaman -->
+                <div class="flex items-center justify-between p-2 md:p-4 gap-3">
+
+                    <!-- KIRI: Tombol Back + Judul Halaman -->
+                    <div class="flex items-center gap-3">
+                        <!-- Tombol Back -->
+                        <button id="btn-back" onclick="goBackPage()"
+                            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 role-mineplanner role-shippingplanner role-admin"
+                            title="Kembali">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+
+                        <!-- KANAN / MOBILE: Tombol Sidebar -->
+                        <button onclick="toggleSidebar()"
+                            class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 role-mineplanner role-shippingplanner role-admin"
+                            title="Toggle Sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+
+                        <!-- Judul Halaman -->
+                        <h1 id="page-title" class="text-lg font-semibold text-gray-900 dark:text-white">
+                            Dashboard Overview
+                        </h1>
+                    </div>
+
+
+
+                </div>
+
+
+                <!-- KANAN: theme + version -->
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleTheme()"
+                        class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors"
+                        title="Toggle Theme">
+                        <!-- Sun Icon (Show in Dark) -->
+                        <svg id="icon-sun" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
+                        <!-- Moon Icon (Show in Light) -->
+                        <svg id="icon-moon" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                            </path>
+                        </svg>
+                    </button>
+
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                        v4.1.0 (Solo)
+                    </div>
+                </div>
+
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6" id="content-area">
+
+                <!-- PAGE 1: DASHBOARD -->
+                <div id="page-dashboard" class="page-content max-w-7xl mx-auto fade-in space-y-6">
+
+                    <!-- A. Production Summary -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- 1. Prev Result -->
+                        <div
+                            class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <p class="text-gray-500 dark:text-gray-400 text-xs uppercase font-bold">Produksi Minggu Lalu
+                            </p>
+                            <div class="flex items-end gap-2 mt-2">
+                                <span class="text-2xl font-bold text-gray-900 dark:text-white"
+                                    id="dash-prev-prod">--</span>
+                                <span class="text-xs text-gray-500 mb-1">MT</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1" id="dash-prev-date">Week --</p>
+                        </div>
+                        <!-- 2. Capacity This Week (Changed from Target) -->
+                        <div
+                            class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <p class="text-gray-500 dark:text-gray-400 text-xs uppercase font-bold">Ketersediaan Armada
+                            </p>
+                            <div class="flex items-end gap-2 mt-2">
+                                <span class="text-2xl font-bold text-blue-600 dark:text-blue-400"
+                                    id="dash-capacity">--</span>
+                                <span class="text-xs text-gray-500 mb-1">MT</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Based on Active Units</p>
+                        </div>
+                        <!-- 3. Achievement -->
+                        <div
+                            class="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <p class="text-gray-500 dark:text-gray-400 text-xs uppercase font-bold">Pencapaian Produksi
+                            </p>
+                            <div class="flex items-end gap-2 mt-2">
+                                <span class="text-2xl font-bold text-green-500 dark:text-green-400"
+                                    id="dash-achievement">--%</span>
+                            </div>
+                            <div class="mt-2 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                <div id="dash-achievement-bar"
+                                    class="h-full bg-green-500 w-0 transition-all duration-1000"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- A.4 Graph -->
+                    <div
+                        class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-bold text-gray-900 dark:text-white uppercase">Grafik Produksi
+                                Mingguan</h3>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="mainChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- B. Operational Conditions (Fleet) -->
+                        <div
+                            class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <h3
+                                class="text-sm font-bold text-gray-900 dark:text-white uppercase mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                🚜 Status Pengiriman
+                            </h3>
+                            <!-- 1. Donut Chart & Summary -->
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="w-24 h-24">
+                                    <canvas id="fleetChart"></canvas>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-500">Total Fleet</p>
+                                    <p class="text-xl font-bold text-gray-900 dark:text-white" id="fleet-total">0</p>
+                                    <p class="text-[10px] text-green-500 font-bold mt-1">Avail: <span
+                                            id="fleet-active">0</span></p>
+                                    <p class="text-[10px] text-red-500 font-bold">Maint: <span
+                                            id="fleet-maintenance">0</span></p>
+                                    <p class="text-[10px] text-yellow-500 font-bold">Transit: <span
+                                            id="fleet-intransit">0</span></p>
+                                </div>
+                            </div>
+                            <!-- 2. Type, Capacity & Position List -->
+                            <div class="space-y-3 max-h-60 overflow-y-auto pr-1" id="fleet-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- C. Weather (Mine & Marine) -->
+                        <div
+                            class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                            <h3
+                                class="text-sm font-bold text-gray-900 dark:text-white uppercase mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                🌤️ Cuaca Terkini
+                            </h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center">
+                                    <p class="text-[10px] text-blue-600 dark:text-blue-400 mb-1">Curah Hujan</p>
+                                    <p class="text-base font-bold text-gray-900 dark:text-white" id="weather-rain">-- mm
+                                    </p>
+                                </div>
+                                <div class="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-center">
+                                    <p class="text-[10px] text-orange-600 dark:text-orange-400 mb-1">Suhu</p>
+                                    <p class="text-base font-bold text-gray-900 dark:text-white" id="weather-temp">--°C
+                                    </p>
+                                </div>
+                                <div class="p-2 bg-gray-50 dark:bg-gray-700/30 rounded-lg text-center">
+                                    <p class="text-[10px] text-gray-500 dark:text-gray-400 mb-1">Angin</p>
+                                    <p class="text-base font-bold text-gray-900 dark:text-white" id="weather-wind">--
+                                        km/h</p>
+                                </div>
+                                <div class="p-2 bg-teal-50 dark:bg-teal-900/20 rounded-lg text-center">
+                                    <p class="text-[10px] text-teal-600 dark:text-teal-400 mb-1">Gelombang</p>
+                                    <p class="text-base font-bold text-gray-900 dark:text-white" id="weather-wave">-- m
+                                    </p>
+                                </div>
+                                <div
+                                    class="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-center col-span-2 flex justify-between items-center px-4">
+                                    <div>
+                                        <p class="text-[10px] text-purple-600 dark:text-purple-400 mb-1">Status</p>
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white" id="weather-status">
+                                            --</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-[10px] text-purple-600 dark:text-purple-400 mb-1">WSI Index</p>
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white" id="weather-wsi">--
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-[10px] text-center text-gray-400">
+                                Integrated with Internal Weather Model
+                            </div>
+                        </div>
+
+                        <!-- D. Shipment Schedule (Compact) -->
+                        <div
+                            class="bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm lg:col-span-1">
+                            <h3
+                                class="text-sm font-bold text-gray-900 dark:text-white uppercase mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                🚢 Jadwal Kapal
+                            </h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead>
+                                        <tr class="text-gray-500 border-b border-gray-100 dark:border-gray-700">
+                                            <th class="pb-2">Vessel</th>
+                                            <th class="pb-2">Est. Arrival</th>
+                                            <th class="pb-2 text-right">Fleet Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700"
+                                        id="shipment-list-mini">
+                                        <!-- Populated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE 2: MINING PLANNER -->
+                <div id="page-mining" class="page-content hidden max-w-6xl mx-auto fade-in space-y-6">
+
+                    <!-- A. Konfigurasi Armada Mingguan -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+                        <div
+                            class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                            <h3 class="font-bold text-gray-900 dark:text-white uppercase text-sm">A. Konfigurasi Armada
+                                Mingguan</h3>
+                            <select id="mining-week"
+                                class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-1.5 text-xs text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="W48">Week 48 (Current)</option>
+                                <option value="W49">Week 49 (Next)</option>
+                                <option value="W50">Week 50</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Available -->
+                            <div
+                                class="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-800">
+                                <p class="text-xs text-green-600 dark:text-green-400 font-bold uppercase">Available</p>
+                                <p id="mining-fleet-avail"
+                                    class="mt-2 w-full text-center text-xl font-bold text-gray-900 dark:text-white py-2">
+                                    --</p>
+                                <p class="text-[10px] text-center text-gray-500 mt-1">Unit Siap Operasi</p>
+                            </div>
+                            <!-- Maintenance -->
+                            <div
+                                class="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100 dark:border-red-800">
+                                <p class="text-xs text-red-600 dark:text-red-400 font-bold uppercase">Maintenance</p>
+                                <p id="mining-fleet-maint"
+                                    class="mt-2 w-full text-center text-xl font-bold text-gray-900 dark:text-white py-2">
+                                    --</p>
+                                <p class="text-[10px] text-center text-gray-500 mt-1">Unit Perbaikan</p>
+                            </div>
+                            <!-- Intransit -->
+                            <div
+                                class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-100 dark:border-yellow-800">
+                                <p class="text-xs text-yellow-600 dark:text-yellow-400 font-bold uppercase">Intransit
+                                </p>
+                                <p id="mining-fleet-transit"
+                                    class="mt-2 w-full text-center text-xl font-bold text-gray-900 dark:text-white py-2">
+                                    --</p>
+                                <p class="text-[10px] text-center text-gray-500 mt-1">Unit Dalam Perjalanan</p>
+                            </div>
+                        </div>
+                        <button onclick="runMiningLogic()"
+                            class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-all transform active:scale-95 flex justify-center items-center gap-2">
+                            <span>⚙️</span> Hitung Kapasitas & Rekomendasi
+                        </button>
+                    </div>
+
+                    <div id="mining-result" class="hidden space-y-6">
+                        <!-- B. Kapasitas Teoritis Mingguan -->
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+                            <h3
+                                class="font-bold text-gray-900 dark:text-white uppercase text-sm mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                B. Kapasitas Teoritis Mingguan</h3>
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-3xl font-bold text-gray-900 dark:text-white" id="sim-capacity">--</p>
+                                    <p class="text-sm text-gray-500">MT / Week</p>
+                                </div>
+                                <div class="text-right text-xs text-gray-500 max-w-xs">
+                                    *Dihitung dari total kapasitas unit available dikali estimasi ritasi mingguan.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- C. Weather Impact Adjustment -->
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+                            <h3
+                                class="font-bold text-gray-900 dark:text-white uppercase text-sm mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                C. Weather Impact Adjustment</h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <!-- Kapasitas Teoritis (Repeat for comparison) -->
+                                <div class="p-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
+                                    <p class="text-[10px] text-gray-500 uppercase">Kapasitas Teoritis</p>
+                                    <p class="text-lg font-bold text-gray-700 dark:text-gray-300"
+                                        id="sim-capacity-comp">--</p>
+                                </div>
+                                <!-- Weather Factor -->
+                                <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                    <p class="text-[10px] text-blue-600 uppercase">Weather Factor</p>
+                                    <p class="text-lg font-bold text-blue-600 dark:text-blue-400"
+                                        id="sim-weather-factor">--</p>
+                                </div>
+                                <!-- Kapasitas Efektif -->
+                                <div
+                                    class="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                                    <p class="text-[10px] text-green-600 uppercase">Kapasitas Efektif</p>
+                                    <p class="text-xl font-bold text-green-600 dark:text-green-400" id="sim-effective">
+                                        --</p>
+                                </div>
+                            </div>
+
+                            <!-- Weather Severity Box -->
+                            <div class="bg-gray-100 dark:bg-gray-900 rounded-lg p-4 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 bg-white dark:bg-gray-800 rounded shadow-sm text-2xl">⛈️</div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 uppercase font-bold">Weather Severity Index</p>
+                                        <p class="text-lg font-bold text-gray-900 dark:text-white" id="wsi-value">--</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- D. Simulation Result (Text Summary) -->
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+                            <h3
+                                class="font-bold text-gray-900 dark:text-white uppercase text-sm mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                D. Simulation Result</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border-l-4 border-blue-500">
+                                    <p class="text-xs text-gray-500 uppercase mb-1">Prediksi Produksi (Ton)</p>
+                                    <p id="sim-result-ton" class="font-bold text-gray-900 dark:text-white text-lg">--
+                                    </p>
+                                </div>
+                                <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border-l-4 border-green-500">
+                                    <p class="text-xs text-gray-500 uppercase mb-1">Achievement (vs Target)</p>
+                                    <p id="sim-result-ach" class="font-bold text-gray-900 dark:text-white text-lg">--
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- E. Production Recommendation -->
+                        <div
+                            class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-6">
+                            <h3
+                                class="font-bold text-blue-900 dark:text-blue-100 uppercase text-sm mb-4 border-b border-blue-200 dark:border-blue-800 pb-2">
+                                E. Production Recommendation (Rule-Based)</h3>
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="p-3 bg-blue-100 dark:bg-blue-800 rounded-lg text-blue-600 dark:text-blue-200">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div
+                                        class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-blue-100 dark:border-blue-800 mb-3">
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">Rekomendasi
+                                            Sistem:</p>
+                                        <p class="text-sm text-gray-700 dark:text-gray-300 italic"
+                                            id="sim-recommendation">"..."</p>
+                                    </div>
+                                    <div class="text-xs text-gray-600 dark:text-gray-400">
+                                        <span class="font-bold">Justifikasi:</span> <span
+                                            id="sim-justification">...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- F. Planner Decision -->
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 text-center">
+                            <h3 class="font-bold text-gray-900 dark:text-white uppercase text-sm mb-4">F. Planner
+                                Decision</h3>
+                            <p class="text-sm text-gray-500 mb-6">Apakah Anda ingin menyetujui rekomendasi rencana
+                                produksi ini?</p>
+                            <div class="flex justify-center gap-4">
+                                <button onclick="revisePlan('mining')"
+                                    class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors">
+                                    Revisi Input
+                                </button>
+                                <button onclick="approvePlan()"
+                                    class="px-8 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg shadow-green-900/20 transition-all transform active:scale-95">
+                                    Setujui Rencana
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Manual Correction Form (Hidden) -->
+                        <div id="mining-correction"
+                            class="hidden mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-100 dark:border-yellow-800 animate-fade-in-up text-left">
+                            <h5 class="text-sm font-bold text-yellow-800 dark:text-yellow-400 mb-2">Koreksi Manual
+                                (Revisi Input)</h5>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 mb-3">Masukkan parameter yang benar untuk
+                                melatih ulang model AI dan update database.</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label
+                                        class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nama
+                                        Kapal / Unit</label>
+                                    <!-- Potentially populated dynamically, but simple input for now or select if we have list -->
+                                    <select id="mining-correct-vessel"
+                                        class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                                        <option value="">-- Pilih Unit --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Atribut
+                                        yang Direvisi</label>
+                                    <select id="mining-correct-field"
+                                        class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                                        <option value="cargo_volume_ton">Cargo Volume (Ton)</option>
+                                        <option value="fleet_status_new">Fleet Availability</option>
+                                        <option value="weather_factor">Weather Factor</option>
+                                        <option value="production_rate">Production Rate</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nilai
+                                        Baru</label>
+                                    <input type="number" id="mining-correct-value"
+                                        class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm focus:ring-2 focus:ring-yellow-500 outline-none"
+                                        placeholder="0">
+                                </div>
+                            </div>
+
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Alasan
+                                Revisi (Log)</label>
+                            <textarea id="mining-correction-text" rows="2"
+                                class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-yellow-500 outline-none mb-3"
+                                placeholder="Contoh: Koreksi manual karena data sensor salah..."></textarea>
+
+                            <div class="flex justify-end gap-2">
+                                <button onclick="cancelCorrection('mining')"
+                                    class="px-4 py-2 text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">Batal</button>
+                                <button onclick="submitCorrection('mining')"
+                                    class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-bold rounded-lg shadow-sm">
+                                    Simpan & Update
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE 3: SHIPPING PLANNER -->
+                <div id="page-shipping" class="page-content hidden max-w-6xl mx-auto fade-in space-y-6">
+
+                    <!-- A. Filter Area -->
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+                        <h3
+                            class="font-bold text-gray-900 dark:text-white uppercase text-sm mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                            A. Filter Jadwal Pengapalan</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Nama
+                                    Kapal (Vessel)</label>
+                                <select id="shipping-vessel"
+                                    class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none">
+                                    <option value="">-- Pilih Kapal --</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Tanggal
+                                    Keberangkatan</label>
+                                <select id="shipping-date"
+                                    class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none">
+                                    <option value="">-- Pilih Tanggal --</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Tujuan
+                                    (Destination)</label>
+                                <select id="shipping-dest"
+                                    class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none">
+                                    <option value="">-- Pilih Tujuan --</option>
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Detail Kapal Box -->
+                        <div id="ship-detail-card"
+                            class="hidden p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800 flex flex-wrap gap-4 text-sm">
+                            <div><span class="text-gray-500 text-xs uppercase">Tujuan:</span> <span
+                                    class="font-bold text-gray-900 dark:text-white block" id="ship-dest-val">--</span>
+                            </div>
+                            <div><span class="text-gray-500 text-xs uppercase">Muatan:</span> <span
+                                    class="font-bold text-gray-900 dark:text-white block" id="ship-vol-val">--</span>
+                            </div>
+                            <div><span class="text-gray-500 text-xs uppercase">Kapasitas:</span> <span
+                                    class="font-bold text-gray-900 dark:text-white block" id="ship-cap-val">55,000
+                                    MT</span></div>
+                            <div><span class="text-gray-500 text-xs uppercase">Est. Tiba:</span> <span
+                                    class="font-bold text-gray-900 dark:text-white block"
+                                    id="ship-arrival-val">--</span></div>
+                            <div><span class="text-gray-500 text-xs uppercase">Status:</span> <span
+                                    class="font-bold block" id="ship-status-val">--</span></div>
+                        </div>
+
+                        <button onclick="runShippingLogic()"
+                            class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition-all transform active:scale-95 flex justify-center items-center gap-2">
+                            <span>🚢</span> Jalankan Analisis Risiko
+                        </button>
+                    </div>
+
+                    <div id="shipping-result" class="hidden space-y-6">
+                        <!-- B. Shipping Risk Analysis (Grid Layout) -->
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+                            <h3
+                                class="font-bold text-gray-900 dark:text-white uppercase text-sm mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                B. Shipping Risk Analysis</h3>
+
+                            <!-- Row 1 -->
+                            <div class="grid grid-cols-3 gap-4 mb-4 text-center">
+                                <div class="p-2 bg-gray-50 dark:bg-gray-700/30 rounded">
+                                    <p class="text-[10px] text-gray-500 uppercase">Wave Height</p>
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white" id="risk-wave">-- m</p>
+                                </div>
+                                <div class="p-2 bg-gray-50 dark:bg-gray-700/30 rounded">
+                                    <p class="text-[10px] text-gray-500 uppercase">Wind Speed</p>
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white" id="risk-wind">-- km/h
+                                    </p>
+                                </div>
+                                <div class="p-2 bg-gray-50 dark:bg-gray-700/30 rounded">
+                                    <p class="text-[10px] text-gray-500 uppercase">Load Ratio</p>
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white" id="risk-load">--%</p>
+                                </div>
+                            </div>
+
+                            <!-- Row 2 -->
+                            <div class="grid grid-cols-3 gap-4 mb-6 text-center">
+                                <div class="p-2 bg-gray-50 dark:bg-gray-700/30 rounded">
+                                    <p class="text-[10px] text-gray-500 uppercase">Actual Speed</p>
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white" id="risk-speed">-- kts
+                                    </p>
+                                </div>
+                                <div class="p-2 bg-gray-50 dark:bg-gray-700/30 rounded">
+                                    <p class="text-[10px] text-gray-500 uppercase">Duration</p>
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white" id="risk-duration">--
+                                        days</p>
+                                </div>
+                                <div class="p-2 bg-gray-50 dark:bg-gray-700/30 rounded">
+                                    <p class="text-[10px] text-gray-500 uppercase">Load Status</p>
+                                    <p class="text-lg font-bold text-gray-900 dark:text-white" id="risk-load-status">--
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Row 3 (Big Cards) -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <!-- Risk Level -->
+                                <div
+                                    class="p-5 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600 text-center">
+                                    <p class="text-xs text-gray-500 uppercase font-bold">Risk Level</p>
+                                    <p class="text-3xl font-bold mt-2" id="ship-risk-level">--</p>
+                                </div>
+                                <!-- Delay -->
+                                <div
+                                    class="p-5 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600 text-center">
+                                    <p class="text-xs text-gray-500 uppercase font-bold">Est. Delay</p>
+                                    <p class="text-3xl font-bold mt-2" id="ship-delay">--</p>
+                                    <p class="text-xs text-gray-500">Hours</p>
+                                </div>
+                                <!-- Speed Status -->
+                                <div
+                                    class="p-5 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600 text-center">
+                                    <p class="text-xs text-gray-500 uppercase font-bold">Speed Status</p>
+                                    <p class="text-xl font-bold mt-3 text-gray-900 dark:text-white"
+                                        id="ship-speed-status">--</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- C. Simulation Result (Text Summary) -->
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5">
+                            <h3
+                                class="font-bold text-gray-900 dark:text-white uppercase text-sm mb-4 border-b border-gray-100 dark:border-gray-700 pb-2">
+                                C. Simulation Result</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border-l-4 border-blue-500">
+                                    <p class="text-xs text-gray-500 uppercase mb-1">Status Operasional</p>
+                                    <p id="ship-result-status" class="font-bold text-gray-900 dark:text-white text-lg">
+                                        --</p>
+                                </div>
+                                <div class="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-lg border-l-4 border-purple-500">
+                                    <p class="text-xs text-gray-500 uppercase mb-1">Estimasi Delay</p>
+                                    <p id="ship-result-delay" class="font-bold text-gray-900 dark:text-white text-lg">--
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- D. Shipping Recommendation -->
+                        <div
+                            class="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-xl p-6">
+                            <h3
+                                class="font-bold text-purple-900 dark:text-purple-100 uppercase text-sm mb-4 border-b border-purple-200 dark:border-purple-800 pb-2">
+                                D. Recommendation (Rule-Based)</h3>
+                            <div class="flex items-start gap-4">
+                                <div
+                                    class="p-3 bg-purple-100 dark:bg-purple-800 rounded-lg text-purple-600 dark:text-purple-200">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div
+                                        class="bg-white dark:bg-gray-800 p-4 rounded-lg border border-purple-100 dark:border-purple-800 mb-3">
+                                        <p class="text-sm font-bold text-gray-900 dark:text-white mb-1">Rekomendasi
+                                            Sistem:</p>
+                                        <p class="text-sm text-gray-700 dark:text-gray-300 italic"
+                                            id="ship-recommendation">"..."</p>
+                                    </div>
+                                    <div class="text-xs text-gray-600 dark:text-gray-400">
+                                        <span class="font-bold">Justifikasi:</span> <span
+                                            id="ship-justification">...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- E. Planner Review -->
+                        <div
+                            class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-5 text-center">
+                            <h3 class="font-bold text-gray-900 dark:text-white uppercase text-sm mb-4">E. Planner Review
+                            </h3>
+                            <div class="flex justify-center gap-4">
+                                <button onclick="revisePlan('shipping')"
+                                    class="px-6 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors">
+                                    Revisi Input
+                                </button>
+                                <button onclick="approvePlan()"
+                                    class="px-8 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-bold shadow-lg shadow-green-900/20 transition-all transform active:scale-95">
+                                    Setujui Jadwal
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Manual Correction Form (Hidden) -->
+                        <div id="shipping-correction"
+                            class="hidden mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-100 dark:border-yellow-800 animate-fade-in-up text-left">
+                            <h5 class="text-sm font-bold text-yellow-800 dark:text-yellow-400 mb-2">Koreksi Manual
+                                (Retrain AI)</h5>
+                            <p class="text-xs text-gray-600 dark:text-gray-400 mb-3">Masukkan data aktual/koreksi untuk
+                                melatih ulang model AI.</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label
+                                        class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Atribut
+                                        yang Direvisi</label>
+                                    <select id="shipping-correct-field"
+                                        class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm focus:ring-2 focus:ring-purple-500 outline-none">
+                                        <option value="wave_height_m">Wave Height (m)</option>
+                                        <option value="wind_speed_kmh">Wind Speed (km/h)</option>
+                                        <option value="actual_speed">Actual Speed (knots)</option>
+                                        <option value="duration">Duration (hours)</option>
+                                        <option value="cargo_volume_ton">Cargo Volume (Ton)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Nilai
+                                        Baru</label>
+                                    <input type="number" id="shipping-correct-value" step="0.01"
+                                        class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-2 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
+                                        placeholder="0">
+                                </div>
+                            </div>
+
+                            <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Alasan
+                                Revisi (Log)</label>
+                            <textarea id="shipping-correction-text" rows="2"
+                                class="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-yellow-500 outline-none mb-3"
+                                placeholder="Contoh: Kapal delay karena antrian sandar, bukan cuaca..."></textarea>
+                            <div class="flex justify-end gap-2">
+                                <button onclick="cancelCorrection('shipping')"
+                                    class="px-4 py-2 text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">Batal</button>
+                                <button onclick="submitCorrection('shipping')"
+                                    class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-bold rounded-lg shadow-sm">
+                                    Simpan Koreksi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAGE 4: ADMIN (USER MANAGEMENT) -->
+                <div id="page-users" class="page-content hidden max-w-5xl mx-auto fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Manajemen User</h3>
+                        <button onclick="addUser()"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                            + Tambah User
+                        </button>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm dark:shadow-none transition-colors">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr
+                                    class="bg-gray-50/50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 text-xs uppercase border-b border-gray-200 dark:border-gray-700">
+                                    <th class="p-4 font-semibold">Nama</th>
+                                    <th class="p-4 font-semibold">Role</th>
+                                    <th class="p-4 font-semibold">Status</th>
+                                    <th class="p-4 font-semibold text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-list" class="text-sm divide-y divide-gray-200 dark:divide-gray-700">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- EDIT USER MODAL -->
+    <div id="edit-user-modal"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm fade-in">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md p-6 transform scale-100 transition-all">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Edit User</h3>
+
+            <input type="hidden" id="edit-user-id">
+            <input type="hidden" id="edit-user-role-hidden">
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                    <input type="text" id="edit-user-name"
+                        class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+
+                <!-- DELETE USER MODAL -->
+                <div id="delete-user-modal"
+                    class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6 animate-scale-in">
+
+                        <div class="flex items-center gap-3 mb-4">
+                            <div
+                                class="w-12 h-12 flex items-center justify-center rounded-full bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400">
+                                ⚠️
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+                                Hapus User?
+                            </h3>
+                        </div>
+
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">
+                            User ini akan <span class="font-semibold text-red-600">dihapus permanen</span>.
+                            Tindakan ini tidak dapat dibatalkan.
+                        </p>
+
+                        <div class="flex justify-end gap-3">
+                            <button onclick="closeDeleteModal()"
+                                class="px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
+                                Batal
+                            </button>
+
+                            <button onclick="confirmDeleteUser()"
+                                class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg shadow-lg">
+                                Ya, Hapus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role input removed as per request. Role is preserved via hidden input. -->
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <select id="edit-user-status"
+                        class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password
+                        (Opsional)</label>
+                    <input type="password" id="edit-user-pass" placeholder="Isi hanya jika ingin mengganti password"
+                        class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="closeEditModal()"
+                    class="px-4 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white font-medium">Batal</button>
+                <button onclick="saveUserEdit()"
+                    class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-lg">Simpan
+                    Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD USER MODAL -->
+    <div id="add-user-modal"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm fade-in">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md p-6 transform scale-100 transition-all">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Tambah User Baru</h3>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Username</label>
+                    <input type="text" id="add-user-name" placeholder="Contoh: planner01"
+                        class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+                    <select id="add-user-role"
+                        class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="Admin">Admin</option>
+                        <option value="Mining">Mining Planner</option>
+                        <option value="Shipping">Shipping Planner</option>
+                        <option value="User">User (Viewer)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                    <input type="password" id="add-user-pass" placeholder="******"
+                        class="w-full bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="closeAddModal()"
+                    class="px-4 py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white font-medium">Batal</button>
+                <button onclick="saveNewUser()"
+                    class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg">Tambah
+                    User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. FLOATING CHATBOT -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <div id="chat-box"
+            class="hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 w-96 h-[28rem] rounded-xl shadow-2xl flex flex-col mb-4 overflow-hidden transition-colors">
+            <!-- Header -->
+            <div class="bg-blue-600 px-4 py-3 flex justify-between items-center">
+                <h4 class="text-white font-bold text-sm">Asisten AI</h4>
+                <button onclick="toggleChat()" class="text-blue-200 hover:text-white">✕</button>
+            </div>
+
+            <!-- Messages -->
+            <div id="chat-messages"
+                class="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50 dark:bg-gray-900 transition-colors text-xs leading-relaxed">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Input -->
+            <div
+                class="p-3 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex gap-2 transition-colors">
+                <input id="chat-input" type="text" placeholder="Ketik pesan..."
+                    onkeypress="if(event.key==='Enter') sendChatMessage()"
+                    class="flex-1 bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded px-3 py-1.5 text-xs text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 transition-colors" />
+                <button onclick="sendChatMessage()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs">
+                    ➤
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Button -->
+        <button onclick="toggleChat()"
+            class="bg-blue-600 hover:bg-blue-700 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-110">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z">
+                </path>
+            </svg>
+        </button>
+    </div>
+
+
+
+    <!-- GENERIC ALERT MODAL -->
+    <div id="alert-modal"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm fade-in">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-sm p-6 transform scale-100 transition-all text-center">
+            <div id="alert-icon-container" class="mb-4 flex justify-center">
+                <!-- Icon will be injected here -->
+            </div>
+            <h3 id="alert-title" class="text-xl font-bold text-gray-900 dark:text-white mb-2">Notification</h3>
+            <p id="alert-message" class="text-gray-600 dark:text-gray-300 mb-6 text-sm">Message goes here.</p>
+            <button onclick="closeAlert()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition-colors shadow-lg">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar')
+            const overlay = document.getElementById('overlay')
+
+            sidebar.classList.toggle('-translate-x-full')
+            overlay.classList.toggle('hidden')
+        }
+    </script>
+</body>
+
+</html>

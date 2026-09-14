@@ -1,0 +1,58 @@
+/* Atur font default */
+body {
+  font-family: "Inter", sans-serif;
+}
+
+.role-restricted {
+  display: none;
+}
+
+/* Animasi Halus (Fade In) */
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hilangkan panah default pada input number (Stepper Custom) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.25s ease-out;
+}
+
+/* One-time animations for Alerts */
+.animate-bounce-short {
+  animation: bounce 1s infinite;
+  animation-iteration-count: 2;
+}
+
+.animate-pulse-short {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation-iteration-count: 2;
+}
